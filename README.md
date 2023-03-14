@@ -1,4 +1,4 @@
-# React Text Game Engine
+# React Walk-Walk Game
 
 Disclaimer: This is not an official Google product.
 
