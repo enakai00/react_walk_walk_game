@@ -4,7 +4,7 @@ import { GameBackend, getScreen, sleep, randInt, clearScreen, print }
 
 
 // Your code here!
-const game = async (screen, refresh, keyPress) => {
+const game = async (screen, refresh, keyPress, exit) => {
   // Global game variables.
   const bike = {x: 0, y: 0, direction: 0, score: 0}
   const bikeChar = ["┻", "┣", "┳", "┫"]
@@ -32,6 +32,7 @@ const game = async (screen, refresh, keyPress) => {
     print(screen, 13, 8, "HIT [S] TO START");
     refresh();
     while (true) {
+      if (exit.current) return;
       if (keyPress["s"]) {
         break;
       }
@@ -93,6 +94,7 @@ const game = async (screen, refresh, keyPress) => {
     finished = false;
     await initGame();
     while (!finished) {
+      if (exit.current) return;
       await moveBike();
       await putBlock();
       await refresh();
@@ -112,6 +114,7 @@ export const Main = (props) => {
   const ySize = 24;
   const screenRef = useRef(getScreen(xSize, ySize));
   const screen = screenRef.current;
+  const exit = useRef(false);
   const keyPressRef = useRef({});
   const keyPress = keyPressRef.current;
   // eslint-disable-next-line
@@ -119,7 +122,10 @@ export const Main = (props) => {
   const refresh = () => { setDummyState([]); }
 
   useEffect(
-    () => {game(screen, refresh, keyPress)}, [screen, keyPress]
+    () => {
+      game(screen, refresh, keyPress, exit);
+      return () => exit.current = true;
+    }, [screen, keyPress]
   );
 
   const element = (
